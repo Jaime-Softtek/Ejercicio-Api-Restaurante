@@ -42,7 +42,15 @@ public class PlatoServiceImpl implements PlatoService {
 		return platoDao.getPlatosByCategoria(categoria).stream().map(Plato::fromPlatoDAO).toList();
 	}
 
+	@Override
+	public Optional<Plato> editPlato(int id, Plato plato) {
+		return platoDao.updatePlato(id, plato.toPlatoDAO()).map(Plato::fromPlatoDAO);
+	}
 
+	@Override
+	public Optional<Plato> deletePlato(int id) {
+		return Optional.empty();
+	}
 
 
 }

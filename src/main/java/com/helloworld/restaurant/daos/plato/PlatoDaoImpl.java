@@ -1,7 +1,7 @@
 package com.helloworld.restaurant.daos.plato;
 
 import com.helloworld.restaurant.daos.model.Plato;
-import com.helloworld.restaurant.daos.model.Menu;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -73,6 +73,23 @@ public class PlatoDaoImpl implements PlatoDao {
 		}
 		catch(EmptyResultDataAccessException e) {
 			return List.of();
+		}
+	}
+
+	@Override
+	public Optional<Plato> updatePlato(int id, Plato plato ) {
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("categoria", plato.categoria());
+		params.put("nombre", plato.nombre());
+		params.put("precio", plato.precio());
+		params.put("calorias", plato.calorias());
+		String query = "UPDATE plato SET nombre=:nombre, precio=:precio, categoria=:categoria, calorias=:calorias WHERE id = :id";
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+		}
+		catch(EmptyResultDataAccessException e) {
+			return Optional.empty();
 		}
 	}
 

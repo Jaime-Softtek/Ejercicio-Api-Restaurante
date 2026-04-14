@@ -11,5 +11,7 @@ public interface PlatoService {
 	Optional<Plato> getPlatosById(int id);
 	List<Plato> getPlatosByCalorias(int calorias);
 	List<Plato> getPlatosByCategoria(int categoria);
+	Optional<Plato> editPlato(int id, Plato plato);
+	Optional<Plato> deletePlato(int id);
 
 }
