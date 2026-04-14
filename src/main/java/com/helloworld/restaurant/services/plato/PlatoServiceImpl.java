@@ -49,7 +49,7 @@ public class PlatoServiceImpl implements PlatoService {
 
 	@Override
 	public Optional<Plato> deletePlato(int id) {
-		return Optional.empty();
+		return platoDao.deletePlato(id).map(Plato::fromPlatoDAO);
 	}
 
 
