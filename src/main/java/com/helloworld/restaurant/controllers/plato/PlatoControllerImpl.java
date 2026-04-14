@@ -15,44 +15,64 @@ import java.util.Optional;
 @RequestMapping("restaurante/platos")
 public class PlatoControllerImpl implements PlatoController {
 
-	private final PlatoService platoService;
+    private final PlatoService platoService;
 
 
-	public PlatoControllerImpl(PlatoService platoService, MenuService menuService) {
-		this.platoService = platoService;
+    public PlatoControllerImpl(PlatoService platoService, MenuService menuService) {
+        this.platoService = platoService;
 
     }
 
 
-	@Override
-	@GetMapping("")
-	public List<Plato> getPlatos() {
-		List<Plato> platos = platoService.getPlatos();
-		return platos;
-	}
+    @Override
+    @GetMapping("")
+    public List<Plato> getPlatos() {
+        List<Plato> platos = platoService.getPlatos();
+        return platos;
+    }
 
-	@Override
-	@GetMapping("/{id}")
-	public Plato getPlatosById(@PathVariable String id) {
-		Optional<Plato> plato = platoService.getPlatosById(Integer.parseInt(id));
-		if (plato.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato no encontrado");
-		} else {
-			return plato.get();
-		}
-	}
-	@Override
-	@GetMapping("/calorias")
-	public List<Plato> getPlatosByCalorias(@RequestParam String calorias) {
+    @Override
+    @GetMapping("/{id}")
+    public Plato getPlatosById(@PathVariable String id) {
+        Optional<Plato> plato = platoService.getPlatosById(Integer.parseInt(id));
+        if (plato.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato no encontrado");
+        } else {
+            return plato.get();
+        }
+    }
 
-		List<Plato> platos = platoService.getPlatosByCalorias(Integer.parseInt(calorias));
-		if (platos.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Platos no encontrados");
-		} else {
-			return platos;
-		}
-	}
+    @Override
+    @GetMapping("/calorias")
+    public List<Plato> getPlatosByCalorias(@RequestParam String calorias) {
 
+        List<Plato> platos = platoService.getPlatosByCalorias(Integer.parseInt(calorias));
+        if (platos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Platos no encontrados");
+        } else {
+            return platos;
+        }
+    }
+
+    @Override
+    @PutMapping("/actualizar")
+    public Optional<Plato> editPlato(int id, String nombre, double precio, Plato.Categoria categoria, int calorias) {
+
+        Optional<Plato> platoNuevo = platoService.editPlato(id, new Plato(id, nombre, precio, categoria, calorias));
+
+        if (platoNuevo.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para actualizar no encontrado");
+        } else {
+            return platoNuevo;
+        }
+    }
+
+
+    @Override
+    @DeleteMapping("/borrar")
+    public Optional<Plato> deletePlato(int id) {
+        return Optional.empty();
+    }
 
 
 }
