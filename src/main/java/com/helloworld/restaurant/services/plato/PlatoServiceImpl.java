@@ -36,7 +36,6 @@ public class PlatoServiceImpl implements PlatoService {
 		return platoDao.getPlatosByCalorias(calorias).stream().map(Plato::fromPlatoDAO).toList();
 	}
 
-
 	@Override
 	public List<Plato> getPlatosByCategoria(int categoria) {
 		return platoDao.getPlatosByCategoria(categoria).stream().map(Plato::fromPlatoDAO).toList();
