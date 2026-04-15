@@ -12,5 +12,5 @@ public interface PlatoDao {
 	List<Plato> getPlatosByCalorias(int calorias);
 	List<Plato> getPlatosByCategoria(int categoria);
 	Optional<Plato> updatePlato(int id, Plato plato);
-
+    List<Plato> getPlatosByRestaurant(String cif);
 }
