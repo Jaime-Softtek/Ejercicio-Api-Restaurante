@@ -8,4 +8,5 @@ public interface MenuService {
     List<Menu> getMenus();
     Menu getOneRandomMenu();
     List<Menu> getLowCostMenus();
+    List<Menu> getHealthyMenus();
 }

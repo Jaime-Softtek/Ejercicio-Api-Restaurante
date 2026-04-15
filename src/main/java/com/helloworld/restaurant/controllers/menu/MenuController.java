@@ -8,4 +8,5 @@ public interface MenuController {
     List<Menu> getMenus();
     Menu getOneMenu();
     List<Menu> getLowCostMenus();
+    List<Menu> getHealthyMenus();
 }

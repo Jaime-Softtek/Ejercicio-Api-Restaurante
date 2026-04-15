@@ -15,7 +15,6 @@ public class Menu {
     }
 
 
-
     public static Menu fromMenuDAO(com.helloworld.restaurant.daos.model.Menu menu) {
 
         return new Menu(
@@ -23,5 +22,13 @@ public class Menu {
                 menu.segundoPlato(),
                 menu.tercerPlato()
         );
+    }
+
+    public double getPrecioTotal() {
+        return primero.precio() + segundo.precio() + tercero.precio();
+    }
+
+    public int getCaloriasTotales() {
+        return primero.calorias() + segundo.calorias() + tercero.calorias();
     }
 }
