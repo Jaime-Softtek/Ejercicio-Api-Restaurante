@@ -40,8 +40,14 @@ public class RestauranteServiceImpl implements RestauranteService{
     }
 
     @Override
-    public void createRestaurante(Restaurante restaurante) {
+    public boolean createRestaurante(Restaurante restaurante) {
+        if (restaurante == null) {
+            return false;
+        }
+        if (restauranteDao.getRestauranteByCif(restaurante.getCif()).isPresent()) {
+            return false;  // Ya existe
+        }
 
-        restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
+        return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
     }
 }

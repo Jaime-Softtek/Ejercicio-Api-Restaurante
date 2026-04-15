@@ -53,7 +53,7 @@ public class RestauranteDaoImpl implements RestauranteDao{
     }
 
     @Override
-    public void saveRestaurante(Restaurante newRestaurante) {
+    public boolean saveRestaurante(Restaurante newRestaurante) {
         String query = "INSERT INTO restaurante (cif, nombre, direccion, telefono) " +
                 "VALUES (:newCif, :newNombre, :newDireccion, :newTelefono)";
 
@@ -63,6 +63,8 @@ public class RestauranteDaoImpl implements RestauranteDao{
                 .addValue("newDireccion", newRestaurante.direccion())
                 .addValue("newTelefono", newRestaurante.telefono());
 
-        jdbcTemplate.update(query, params);
+        int filas = jdbcTemplate.update(query, params);
+        if (filas == 1) {return true;} else { return false; }
+
     }
 }

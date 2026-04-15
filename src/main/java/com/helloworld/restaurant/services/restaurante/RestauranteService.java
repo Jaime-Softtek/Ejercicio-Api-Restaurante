@@ -12,5 +12,5 @@ public interface RestauranteService {
     Optional<Restaurante> getRestauranteByCif(String cif);
     public List<Plato> getCartaFromRestaurante(String cif);
 
-    void createRestaurante(Restaurante restaurante);
+    boolean createRestaurante(Restaurante restaurante);
 }
