@@ -13,6 +13,5 @@ public interface PlatoDao {
 	List<Plato> getPlatosByCategoria(int categoria);
 	Optional<Plato> updatePlato(int id, Plato plato);
 	Optional<Plato> deletePlato(int id);
-
-
+  List<Plato> getPlatosByRestaurant(String cif);
 }

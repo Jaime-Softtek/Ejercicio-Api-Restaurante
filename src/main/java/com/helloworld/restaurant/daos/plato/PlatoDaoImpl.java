@@ -106,6 +106,18 @@ public class PlatoDaoImpl implements PlatoDao {
 		}
 
 	}
+    @Override
+    public List<Plato> getPlatosByRestaurant(String cif) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("cif", cif);
+        String query = "SELECT plato.id, plato.nombre, plato.precio, plato.categoria, plato.calorias FROM plato JOIN restaurante_plato ON plato.id = restaurante_plato.id_plato WHERE restaurante_plato.cif_restaurante = :cif";
+        try {
+            return jdbcTemplate.query(query, params, platoRowMapper);
+        }
+        catch(EmptyResultDataAccessException e) {
+            return List.of();
+        }
+    }
 
 
 }
