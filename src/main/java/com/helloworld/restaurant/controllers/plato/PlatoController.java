@@ -12,5 +12,6 @@ public interface PlatoController {
 	List<Plato> getPlatosByCalorias(String calorias);
 	Optional<Plato> editPlato(Plato plato);
 	Optional<Plato> deletePlato(int id);
+	Optional<Plato> createPlato(Plato plato);
 
 }

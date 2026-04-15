@@ -80,4 +80,15 @@ public class PlatoControllerImpl implements PlatoController {
 
     }
 
+    @Override
+    @PostMapping("")
+    public Optional<Plato> createPlato(@RequestBody Plato plato) {
+        Optional<Plato> platoCreado = platoService.createPlato(plato);
+        if (platoCreado.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para crear no encontrado");
+        } else {
+            return platoCreado;
+        }
+    }
+
 }
