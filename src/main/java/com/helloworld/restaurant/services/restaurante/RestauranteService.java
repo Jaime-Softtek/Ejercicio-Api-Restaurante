@@ -13,4 +13,5 @@ public interface RestauranteService {
     public List<Plato> getCartaFromRestaurante(String cif);
 
     boolean createRestaurante(Restaurante restaurante);
+    boolean deleteRestaurante(String cif);
 }

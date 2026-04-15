@@ -10,4 +10,5 @@ public interface RestauranteDao {
     Optional<Restaurante> getRestauranteByCif(String cif);
 
     boolean saveRestaurante(Restaurante newRestaurante);
+    boolean eliminarRestaurante(String cif);
 }

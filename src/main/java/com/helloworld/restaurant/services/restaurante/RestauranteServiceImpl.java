@@ -50,4 +50,11 @@ public class RestauranteServiceImpl implements RestauranteService{
 
         return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
     }
+
+    @Override
+    public boolean deleteRestaurante(String cif) {
+        return restauranteDao.getRestauranteByCif(cif)
+                .map(restaurante -> restauranteDao.eliminarRestaurante(cif))
+                .orElse(false);
+    }
 }

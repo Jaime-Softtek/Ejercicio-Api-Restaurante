@@ -67,4 +67,18 @@ public class RestauranteDaoImpl implements RestauranteDao{
         if (filas == 1) {return true;} else { return false; }
 
     }
+
+    @Override
+    public boolean eliminarRestaurante(String cifToDel) {
+        if (cifToDel == null || cifToDel.trim().isEmpty()) {
+            return false;
+        }
+
+        String query = "DELETE from restaurante where cif=:cifToDel";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("cifToDel", cifToDel.trim());
+
+        int filas = jdbcTemplate.update(query, params);
+        return filas == 1;
+    }
 }
