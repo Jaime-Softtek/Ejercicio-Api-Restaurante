@@ -81,4 +81,25 @@ public class RestauranteDaoImpl implements RestauranteDao{
         int filas = jdbcTemplate.update(query, params);
         return filas == 1;
     }
+
+    @Override
+    public Optional<Restaurante> editRestaurante(String cif, Restaurante restaurante) {
+        String query = "UPDATE restaurante SET " +
+                "nombre=:newNombre, " +
+                "direccion=:newDireccion, " +
+                "telefono=:newTelefono " +
+                "WHERE cif=:cif";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("cif", restaurante.cif())
+                .addValue("newNombre", restaurante.nombre())
+                .addValue("newDireccion", restaurante.direccion())
+                .addValue("newTelefono", restaurante.telefono());
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(query, params, restauranteRowMapper));
+        } catch (EmptyResultDataAccessException | NullPointerException e){
+            return Optional.empty();
+        }
+    }
 }
