@@ -38,4 +38,10 @@ public class RestauranteServiceImpl implements RestauranteService{
             return restaurante.get().getCarta();
         }
     }
+
+    @Override
+    public void createRestaurante(Restaurante restaurante) {
+
+        restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
+    }
 }

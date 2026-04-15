@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface RestauranteDao {
     List<Restaurante> getRestaurantes();
     Optional<Restaurante> getRestauranteByCif(String cif);
+
+    void saveRestaurante(Restaurante newRestaurante);
 }
