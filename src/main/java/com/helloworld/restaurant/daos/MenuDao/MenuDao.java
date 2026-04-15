@@ -11,4 +11,5 @@ public interface MenuDao {
 
     Optional<Menu> getOneRandomMenu();
     List<Menu> getLowCostMenus();
+    List<Menu> getMenusByRestaurant(String cif);
 }
