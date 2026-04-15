@@ -38,4 +38,16 @@ public class RestauranteServiceImpl implements RestauranteService{
             return restaurante.get().getCarta();
         }
     }
+
+    @Override
+    public boolean createRestaurante(Restaurante restaurante) {
+        if (restaurante == null) {
+            return false;
+        }
+        if (restauranteDao.getRestauranteByCif(restaurante.getCif()).isPresent()) {
+            return false;  // Ya existe
+        }
+
+        return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
+    }
 }

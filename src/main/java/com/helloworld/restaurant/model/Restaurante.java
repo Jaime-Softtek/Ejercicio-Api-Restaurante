@@ -32,4 +32,17 @@ public class Restaurante {
                         .toList()
         );
     }
+
+    public static com.helloworld.restaurant.daos.model.Restaurante fromRestauranteModel (Restaurante restaurante) {
+        return new com.helloworld.restaurant.daos.model.Restaurante(
+                restaurante.getCif(),
+                restaurante.getNombre(),
+                restaurante.getDireccion(),
+                restaurante.getTelefono(),
+                restaurante.getCarta()
+                        .stream()
+                        .map(Plato::toPlatoDAO)
+                        .toList()
+        );
+    }
 }

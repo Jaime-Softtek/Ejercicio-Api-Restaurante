@@ -1,10 +1,10 @@
 package com.helloworld.restaurant.daos.restaurante;
 
 import com.helloworld.restaurant.daos.model.Restaurante;
-import com.helloworld.restaurant.daos.plato.PlatoDao;
 import com.helloworld.restaurant.daos.plato.PlatoDaoImpl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -50,5 +50,21 @@ public class RestauranteDaoImpl implements RestauranteDao{
         } catch (EmptyResultDataAccessException | NullPointerException e){
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean saveRestaurante(Restaurante newRestaurante) {
+        String query = "INSERT INTO restaurante (cif, nombre, direccion, telefono) " +
+                "VALUES (:newCif, :newNombre, :newDireccion, :newTelefono)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("newCif", newRestaurante.cif())
+                .addValue("newNombre", newRestaurante.nombre())
+                .addValue("newDireccion", newRestaurante.direccion())
+                .addValue("newTelefono", newRestaurante.telefono());
+
+        int filas = jdbcTemplate.update(query, params);
+        if (filas == 1) {return true;} else { return false; }
+
     }
 }
