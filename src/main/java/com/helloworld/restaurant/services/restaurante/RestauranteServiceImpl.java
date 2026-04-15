@@ -45,7 +45,7 @@ public class RestauranteServiceImpl implements RestauranteService{
             return false;
         }
         if (restauranteDao.getRestauranteByCif(restaurante.getCif()).isPresent()) {
-            return false;  // Ya existe
+            return false;
         }
 
         return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
@@ -56,5 +56,11 @@ public class RestauranteServiceImpl implements RestauranteService{
         return restauranteDao.getRestauranteByCif(cif)
                 .map(restaurante -> restauranteDao.eliminarRestaurante(cif))
                 .orElse(false);
+    }
+
+    @Override
+    public Optional<Restaurante> modify(String cif, com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+        return restauranteDao.editRestaurante(cif, restaurante)
+                .map(Restaurante::fromRestauranteDao);
     }
 }
