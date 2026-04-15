@@ -37,4 +37,11 @@ public class MenuControllerImpl implements MenuController{
 
         return menuService.getLowCostMenus();
     }
+
+    @Override
+    @GetMapping("/healthy")
+    public List<Menu> getHealthyMenus() {
+        return menuService.getHealthyMenus();
+    }
+
 }

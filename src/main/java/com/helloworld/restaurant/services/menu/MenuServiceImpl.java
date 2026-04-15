@@ -31,4 +31,17 @@ public class MenuServiceImpl implements MenuService {
     public List<Menu> getLowCostMenus() {
         return menuDao.getLowCostMenus().stream().map(Menu::fromMenuDAO).toList();
     }
+
+    @Override
+    public List<Menu> getHealthyMenus() {
+        List<Menu> menus = getMenus();
+        double mediaCalorias = menus.stream()
+                .mapToInt(Menu::getCaloriasTotales)
+                .average()
+                .orElse(0);
+
+        return menus.stream()
+                .filter(menu -> menu.getCaloriasTotales() < mediaCalorias)
+                .toList();
+    }
 }
