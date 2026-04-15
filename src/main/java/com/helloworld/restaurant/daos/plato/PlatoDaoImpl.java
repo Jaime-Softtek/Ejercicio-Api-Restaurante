@@ -93,6 +93,19 @@ public class PlatoDaoImpl implements PlatoDao {
 		}
 	}
 
+	@Override
+	public Optional<Plato> deletePlato(int id) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", id);
+		String query = "DELETE FROM plato WHERE id = :id";
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+		}
+		catch(EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+
+	}
     @Override
     public List<Plato> getPlatosByRestaurant(String cif) {
         Map<String, Object> params = new HashMap<>();

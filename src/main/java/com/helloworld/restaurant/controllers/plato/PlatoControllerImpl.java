@@ -67,12 +67,17 @@ public class PlatoControllerImpl implements PlatoController {
         }
     }
 
-
     @Override
-    @DeleteMapping("/borrar")
+    @DeleteMapping("/{id}")
     public Optional<Plato> deletePlato(int id) {
-        return Optional.empty();
-    }
+        Optional<Plato> platoBorrado = platoService.deletePlato(id);
 
+        if (platoBorrado.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para borrar no encontrado");
+        } else {
+            return platoBorrado;
+        }
+
+    }
 
 }
