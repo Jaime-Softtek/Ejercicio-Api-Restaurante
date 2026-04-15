@@ -79,14 +79,16 @@ public class PlatoDaoImpl implements PlatoDao {
 	@Override
 	public Optional<Plato> updatePlato(int id, Plato plato ) {
 		Map<String, Object> params = new HashMap<>();
+		params.put("id", id);
 
-		params.put("categoria", plato.categoria());
 		params.put("nombre", plato.nombre());
 		params.put("precio", plato.precio());
+		params.put("categoria", plato.categoria());
 		params.put("calorias", plato.calorias());
 		String query = "UPDATE plato SET nombre=:nombre, precio=:precio, categoria=:categoria, calorias=:calorias WHERE id = :id";
 		try {
-			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+			jdbcTemplate.update(query, params);
+			return Optional.of(plato);
 		}
 		catch(EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -95,11 +97,13 @@ public class PlatoDaoImpl implements PlatoDao {
 
 	@Override
 	public Optional<Plato> deletePlato(int id) {
+		Optional<Plato> plato = getPlatosById(id);
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", id);
 		String query = "DELETE FROM plato WHERE id = :id";
 		try {
-			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+			jdbcTemplate.update(query, params);
+			return plato;
 		}
 		catch(EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -132,7 +136,8 @@ public class PlatoDaoImpl implements PlatoDao {
 		String query = "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES (:nombre, :precio, :categoria, :calorias)";
 
 		try {
-			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+			jdbcTemplate.update(query, params);
+			return Optional.of(plato);
 		}
 		catch(EmptyResultDataAccessException e) {
 			return Optional.empty();

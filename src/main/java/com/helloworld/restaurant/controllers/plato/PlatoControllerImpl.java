@@ -69,7 +69,7 @@ public class PlatoControllerImpl implements PlatoController {
 
     @Override
     @DeleteMapping("/{id}")
-    public Optional<Plato> deletePlato(int id) {
+    public Optional<Plato> deletePlato(@PathVariable int id) {
         Optional<Plato> platoBorrado = platoService.deletePlato(id);
 
         if (platoBorrado.isEmpty()) {
