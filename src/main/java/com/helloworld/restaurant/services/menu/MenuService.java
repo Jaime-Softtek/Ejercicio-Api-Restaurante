@@ -9,4 +9,7 @@ public interface MenuService {
     Menu getOneRandomMenu();
     List<Menu> getLowCostMenus();
     List<Menu> getHealthyMenus();
+    List<Menu> getMenusByRestaurant(String cif);
+    List<Menu> getLowCostMenus(String cif);
+    List<Menu> getHealthyMenus(String cif);
 }

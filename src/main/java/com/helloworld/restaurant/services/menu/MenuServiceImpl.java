@@ -44,4 +44,41 @@ public class MenuServiceImpl implements MenuService {
                 .filter(menu -> menu.getCaloriasTotales() < mediaCalorias)
                 .toList();
     }
+
+    @Override
+    public List<Menu> getMenusByRestaurant(String cif) {
+        return menuDao.getMenusByRestaurant(cif)
+                .stream()
+                .map(Menu::fromMenuDAO)
+                .toList();
+    }
+
+    @Override
+    public List<Menu> getLowCostMenus(String cif) {
+
+        List<Menu> menus = getMenusByRestaurant(cif);
+
+        double media = menus.stream()
+                .mapToDouble(Menu::getPrecioTotal)
+                .average()
+                .orElse(0);
+
+        return menus.stream()
+                .filter(menu -> menu.getPrecioTotal() <= media)
+                .toList();
+    }
+    @Override
+    public List<Menu> getHealthyMenus(String cif) {
+
+        List<Menu> menus = getMenusByRestaurant(cif);
+
+        double mediaCalorias = menus.stream()
+                .mapToInt(Menu::getCaloriasTotales)
+                .average()
+                .orElse(0);
+
+        return menus.stream()
+                .filter(menu -> menu.getCaloriasTotales() < mediaCalorias)
+                .toList();
+    }
 }
