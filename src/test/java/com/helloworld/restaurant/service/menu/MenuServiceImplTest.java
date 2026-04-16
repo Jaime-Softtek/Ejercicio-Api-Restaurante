@@ -1,4 +1,4 @@
-package com.helloworld.restaurant;
+package com.helloworld.restaurant.service.menu;
 
 import com.helloworld.restaurant.daos.MenuDao.MenuDao;
 import com.helloworld.restaurant.daos.model.Plato;
@@ -6,7 +6,6 @@ import com.helloworld.restaurant.daos.plato.PlatoDao;
 import com.helloworld.restaurant.services.menu.MenuServiceImpl;
 import com.helloworld.restaurant.services.menu.filter.Healthy;
 import com.helloworld.restaurant.services.menu.filter.LowCost;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
