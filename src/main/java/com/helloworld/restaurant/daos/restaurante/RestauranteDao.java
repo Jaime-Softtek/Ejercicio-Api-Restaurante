@@ -12,4 +12,6 @@ public interface RestauranteDao {
     boolean saveRestaurante(Restaurante newRestaurante);
     boolean eliminarRestaurante(String cif);
     Optional<Restaurante> editRestaurante(String cif, Restaurante restaurante);
+    boolean addPlatoToRestaurante(String cif, Integer idPlato);
+    boolean removePlatoFromRestaurante(String cif, Integer idPlato);
 }
