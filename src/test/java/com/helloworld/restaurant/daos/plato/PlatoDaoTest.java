@@ -71,10 +71,16 @@ public class PlatoDaoTest {
 
         final String CIF = "A12345678";
 
+        List<Plato> platos = platoDao.getPlatosByRestaurant(CIF);
+
+        assertEquals("Ensalada", platos.get(0).nombre());
+        assertEquals("Gazpacho", platos.get(1).nombre());
+
     }
 
     @Test
     void deberiaCrearPlato(){
+
         List<Plato> platos = platoDao.getPlatos();
         Plato plato = new Plato(platos.size()+1, "Prueba", 7.99, 1, 450);
         platoDao.cretePlato(plato);
@@ -83,6 +89,7 @@ public class PlatoDaoTest {
 
     @Test
     void deberiaEliminarPlato(){
+
         List<Plato> platos = platoDao.getPlatos();
         Plato plato = new Plato(platos.size()+1, "Prueba", 7.99, 1, 450);
         platoDao.cretePlato(plato);

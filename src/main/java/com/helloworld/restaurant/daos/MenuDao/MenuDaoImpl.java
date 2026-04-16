@@ -50,37 +50,4 @@ public class MenuDaoImpl implements MenuDao{
 
     }
 
-    @Override
-    public List<Menu> getLowCostMenus() {
-
-        int preciomedio = getMenus().stream()
-                .mapToInt(menu -> (int) menu.precio())
-                .sum() / getMenus().size();
-
-        return getMenus().stream()
-                .filter(menu -> menu.precio() <= preciomedio)
-                .toList();
-    }
-
-    @Override
-    public List<Menu> getMenusByRestaurant(String cif) {
-
-        List<Plato> platos = platoDao.getPlatosByRestaurant(cif);
-
-        List<Plato> primeros = platos.stream().filter(p -> p.categoria() == 1).toList();
-        List<Plato> segundos = platos.stream().filter(p -> p.categoria() == 2).toList();
-        List<Plato> terceros = platos.stream().filter(p -> p.categoria() == 3).toList();
-
-        List<Menu> menus = new ArrayList<>();
-
-        for (Plato primero : primeros) {
-            for (Plato segundo : segundos) {
-                for (Plato tercero : terceros) {
-                    menus.add(new Menu(primero, segundo, tercero));
-                }
-            }
-        }
-
-        return menus;
-    }
 }
