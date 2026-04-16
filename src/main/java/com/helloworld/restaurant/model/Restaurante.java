@@ -39,7 +39,9 @@ public class Restaurante {
                 restaurante.getNombre(),
                 restaurante.getDireccion(),
                 restaurante.getTelefono(),
-                restaurante.getCarta()
+                restaurante.getCarta() == null || restaurante.getCarta().isEmpty()
+                        ? List.of()
+                        : restaurante.getCarta()
                         .stream()
                         .map(Plato::toPlatoDAO)
                         .toList()

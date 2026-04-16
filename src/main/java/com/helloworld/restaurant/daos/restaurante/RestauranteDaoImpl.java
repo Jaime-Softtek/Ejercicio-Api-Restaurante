@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class RestauranteDaoImpl implements RestauranteDao{
     }
 
     @Override
-    public boolean saveRestaurante(Restaurante newRestaurante) {
+    public Optional<Restaurante> saveRestaurante(Restaurante newRestaurante) {
         String query = "INSERT INTO restaurante (cif, nombre, direccion, telefono) " +
                 "VALUES (:newCif, :newNombre, :newDireccion, :newTelefono)";
 
@@ -64,7 +65,12 @@ public class RestauranteDaoImpl implements RestauranteDao{
                 .addValue("newTelefono", newRestaurante.telefono());
 
         int filas = jdbcTemplate.update(query, params);
-        if (filas == 1) {return true;} else { return false; }
+        if (filas == 1) {
+            Restaurante res = new Restaurante(newRestaurante.cif(), newRestaurante.nombre(), newRestaurante.direccion(), newRestaurante.telefono(), List.of());
+            return Optional.of(res);
+        } else {
+            return Optional.empty();
+        }
 
     }
 
@@ -91,15 +97,27 @@ public class RestauranteDaoImpl implements RestauranteDao{
                 "WHERE cif=:cif";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("cif", restaurante.cif())
+                .addValue("cif", cif)
                 .addValue("newNombre", restaurante.nombre())
                 .addValue("newDireccion", restaurante.direccion())
                 .addValue("newTelefono", restaurante.telefono());
 
+
+        int filas = jdbcTemplate.update(query, params);
+
+        if (filas == 0) {
+            return Optional.empty();
+        }
+
+        String selectQuery = "SELECT * FROM restaurante WHERE cif=:cif";
+        MapSqlParameterSource selectParams = new MapSqlParameterSource().addValue("cif", cif);
+
         try {
-            return Optional.of(jdbcTemplate.queryForObject(query, params, restauranteRowMapper));
+            return Optional.of(jdbcTemplate.queryForObject(selectQuery, selectParams, restauranteRowMapper));
         } catch (EmptyResultDataAccessException | NullPointerException e){
             return Optional.empty();
         }
     }
+
+    //editar carta restaurante
 }
