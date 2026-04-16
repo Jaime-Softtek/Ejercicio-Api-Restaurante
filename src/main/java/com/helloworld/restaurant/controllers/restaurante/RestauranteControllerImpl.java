@@ -4,10 +4,8 @@ import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.model.Restaurante;
 import com.helloworld.restaurant.services.restaurante.RestauranteService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -47,5 +45,42 @@ public class RestauranteControllerImpl implements RestauranteController{
         } else {
             return carta;
         }
+    }
+
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearRestaurante(@RequestBody Restaurante restaurante) {
+        boolean creado = restauranteService.createRestaurante(restaurante);
+
+        if (!creado) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Restaurante ya existe o datos inválidos");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Restaurante creado exitosamente");
+    }
+
+    @DeleteMapping("/restaurantes/{cif}")
+    public ResponseEntity<String> eliminarRestaurante(@PathVariable String cif) {
+        boolean eliminado = restauranteService.deleteRestaurante(cif);
+
+        if (!eliminado) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe un restaurante con cif: " + cif);
+        }
+
+        return ResponseEntity.ok("Restaurante eliminado correctamente");
+    }
+
+    @PutMapping("/restaurantes/{cif}")
+    public ResponseEntity<String> editarRestaurante(
+            @PathVariable String cif,
+            @RequestBody
+            com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+
+        return restauranteService.modifyRestaurante(cif, restaurante)
+                .map(r -> ResponseEntity.ok(r))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No existe un restaurante con cif: " + cif));
     }
 }

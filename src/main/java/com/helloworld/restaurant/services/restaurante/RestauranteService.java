@@ -14,5 +14,6 @@ public interface RestauranteService {
 
     boolean createRestaurante(Restaurante restaurante);
     boolean deleteRestaurante(String cif);
-    Optional<Restaurante> modifyRestaurante(String cif, com.helloworld.restaurant.daos.model.Restaurante restaurante);
+    Optional<Restaurante> modifyRestaurante(String cif,
+                                            com.helloworld.restaurant.daos.model.Restaurante restaurante);
 }
