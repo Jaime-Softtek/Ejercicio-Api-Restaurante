@@ -107,7 +107,6 @@ public class PlatoServiceTest {
         assertEquals("Pizza", resultado.get().getNombre());
 
         verify(platoDao).deletePlato(1);
-
     }
 
 
