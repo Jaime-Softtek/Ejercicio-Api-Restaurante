@@ -59,7 +59,8 @@ public class RestauranteServiceImpl implements RestauranteService{
     }
 
     @Override
-    public Optional<Restaurante> modifyRestaurante(String cif, com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+    public Optional<Restaurante> modifyRestaurante(String cif,
+                                                   com.helloworld.restaurant.daos.model.Restaurante restaurante) {
         return restauranteDao.editRestaurante(cif, restaurante)
                 .map(Restaurante::fromRestauranteDao);
     }
