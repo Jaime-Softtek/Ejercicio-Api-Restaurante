@@ -1,10 +1,10 @@
 package com.helloworld.restaurant.daos.restaurante;
 
 import com.helloworld.restaurant.daos.model.Restaurante;
-import com.helloworld.restaurant.daos.plato.PlatoDao;
 import com.helloworld.restaurant.daos.plato.PlatoDaoImpl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -45,6 +45,57 @@ public class RestauranteDaoImpl implements RestauranteDao{
         Map<String, Object> params = new HashMap<>();
         params.put("cif", cif);
         String query = "SELECT cif, nombre, direccion, telefono FROM restaurante WHERE cif=:cif";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(query, params, restauranteRowMapper));
+        } catch (EmptyResultDataAccessException | NullPointerException e){
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean saveRestaurante(Restaurante newRestaurante) {
+        String query = "INSERT INTO restaurante (cif, nombre, direccion, telefono) " +
+                "VALUES (:newCif, :newNombre, :newDireccion, :newTelefono)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("newCif", newRestaurante.cif())
+                .addValue("newNombre", newRestaurante.nombre())
+                .addValue("newDireccion", newRestaurante.direccion())
+                .addValue("newTelefono", newRestaurante.telefono());
+
+        int filas = jdbcTemplate.update(query, params);
+        if (filas == 1) {return true;} else { return false; }
+
+    }
+
+    @Override
+    public boolean eliminarRestaurante(String cifToDel) {
+        if (cifToDel == null || cifToDel.trim().isEmpty()) {
+            return false;
+        }
+
+        String query = "DELETE from restaurante where cif=:cifToDel";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("cifToDel", cifToDel.trim());
+
+        int filas = jdbcTemplate.update(query, params);
+        return filas == 1;
+    }
+
+    @Override
+    public Optional<Restaurante> editRestaurante(String cif, Restaurante restaurante) {
+        String query = "UPDATE restaurante SET " +
+                "nombre=:newNombre, " +
+                "direccion=:newDireccion, " +
+                "telefono=:newTelefono " +
+                "WHERE cif=:cif";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("cif", restaurante.cif())
+                .addValue("newNombre", restaurante.nombre())
+                .addValue("newDireccion", restaurante.direccion())
+                .addValue("newTelefono", restaurante.telefono());
+
         try {
             return Optional.of(jdbcTemplate.queryForObject(query, params, restauranteRowMapper));
         } catch (EmptyResultDataAccessException | NullPointerException e){

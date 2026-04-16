@@ -5,9 +5,11 @@ import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.services.menu.MenuService;
 import com.helloworld.restaurant.services.plato.PlatoService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,21 +57,27 @@ public class PlatoControllerImpl implements PlatoController {
     }
 
     @Override
-    @PutMapping("/actualizar")
-    public Optional<Plato> editPlato(@RequestBody Plato plato) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Plato> editPlato(@RequestBody Plato plato, @PathVariable int id) {
 
-        Optional<Plato> platoNuevo = platoService.editPlato(plato.getId(), plato);
+        Optional<Plato> platoNuevo = platoService.editPlato(id, plato);
 
-        if (platoNuevo.isEmpty()) {
+        Optional<Plato> platoExistente = platoService.getPlatosById(id);
+
+        if (platoNuevo.isEmpty() || platoExistente.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para actualizar no encontrado");
         } else {
-            return platoNuevo;
+
+            URI location = URI.create("restaurante/platos/"+ id);
+            return ResponseEntity
+                    .created(location)
+                    .body(platoExistente.get());
         }
     }
 
     @Override
     @DeleteMapping("/{id}")
-    public Optional<Plato> deletePlato(int id) {
+    public Optional<Plato> deletePlato(@PathVariable int id) {
         Optional<Plato> platoBorrado = platoService.deletePlato(id);
 
         if (platoBorrado.isEmpty()) {
@@ -82,12 +90,20 @@ public class PlatoControllerImpl implements PlatoController {
 
     @Override
     @PostMapping("")
-    public Optional<Plato> createPlato(@RequestBody Plato plato) {
+    public ResponseEntity<Plato> createPlato(@RequestBody Plato plato) {
         Optional<Plato> platoCreado = platoService.createPlato(plato);
-        if (platoCreado.isEmpty()) {
+
+        Optional<Plato> platoExistente = platoService.getPlatos().stream().filter(p -> p.getNombre().equals(plato.getNombre())).findFirst();
+
+        if (platoCreado.isEmpty() || platoExistente.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para crear no encontrado");
         } else {
-            return platoCreado;
+
+            URI location = URI.create("restaurante/platos/"+ platoExistente.get().getId());
+            return ResponseEntity
+                    .created(location)
+                    .body(platoExistente.get());
+
         }
     }
 

@@ -38,4 +38,30 @@ public class RestauranteServiceImpl implements RestauranteService{
             return restaurante.get().getCarta();
         }
     }
+
+    @Override
+    public boolean createRestaurante(Restaurante restaurante) {
+        if (restaurante == null) {
+            return false;
+        }
+        if (restauranteDao.getRestauranteByCif(restaurante.getCif()).isPresent()) {
+            return false;
+        }
+
+        return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
+    }
+
+    @Override
+    public boolean deleteRestaurante(String cif) {
+        return restauranteDao.getRestauranteByCif(cif)
+                .map(restaurante -> restauranteDao.eliminarRestaurante(cif))
+                .orElse(false);
+    }
+
+    @Override
+    public Optional<Restaurante> modifyRestaurante(String cif,
+                                                   com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+        return restauranteDao.editRestaurante(cif, restaurante)
+                .map(Restaurante::fromRestauranteDao);
+    }
 }
