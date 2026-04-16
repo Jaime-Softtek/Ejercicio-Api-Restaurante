@@ -2,107 +2,139 @@ package com.helloworld.restaurant;
 
 import com.helloworld.restaurant.daos.MenuDao.MenuDao;
 import com.helloworld.restaurant.daos.model.Plato;
+import com.helloworld.restaurant.daos.plato.PlatoDao;
 import com.helloworld.restaurant.services.menu.MenuServiceImpl;
+import com.helloworld.restaurant.services.menu.filter.Healthy;
+import com.helloworld.restaurant.services.menu.filter.LowCost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class MenuServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class MenuServiceImplTest {
 
+    @Mock
     private MenuDao menuDao;
+
+    @Mock
+    private PlatoDao platoDao;
+
+    @InjectMocks
     private MenuServiceImpl menuService;
 
-    @BeforeEach
-    void setUp() {
-        menuDao = Mockito.mock(MenuDao.class);
-        menuService = new MenuServiceImpl(menuDao);
+    private Plato plato(double precio, int calorias, int categoria) {
+        return new Plato(1, "plato", precio, categoria, calorias);
     }
 
-    private Plato plato(double precio, int calorias) {
-        return new Plato(1, "plato", precio, 1, calorias);
-    }
-
-    private com.helloworld.restaurant.daos.model.Menu menuDAO(
-            double p1, double p2, double p3,
-            int c1, int c2, int c3) {
-
+    private com.helloworld.restaurant.daos.model.Menu menuDAO() {
         return new com.helloworld.restaurant.daos.model.Menu(
-                plato(p1, c1),
-                plato(p2, c2),
-                plato(p3, c3)
+                plato(5, 200, 1),
+                plato(6, 300, 2),
+                plato(7, 400, 3)
         );
     }
 
     @Test
+    void getMenus_shouldReturnList() {
+
+        Mockito.when(menuDao.getMenus())
+                .thenReturn(List.of(menuDAO()));
+
+        var result = menuService.getMenus();
+
+        assertEquals(1, result.size());
+        assertEquals(18.0, result.get(0).getPrecioTotal());
+    }
+
+    @Test
     void getOneRandomMenu_shouldReturnMenu() {
+
         Mockito.when(menuDao.getOneRandomMenu())
-                .thenReturn(Optional.of(menuDAO(1, 1, 1, 100, 100, 100)));
+                .thenReturn(Optional.of(menuDAO()));
 
         var result = menuService.getOneRandomMenu();
 
         assertNotNull(result);
-        assertEquals(3.0, result.getPrecioTotal());
+        assertEquals(18.0, result.getPrecioTotal());
     }
 
     @Test
-    void getHealthyMenus_shouldReturnBelowAverageCalories() {
-        Mockito.when(menuDao.getMenus())
-                .thenReturn(
-                        java.util.List.of(
-                                menuDAO(1, 1, 1, 100, 100, 100), // 300
-                                menuDAO(1, 1, 1, 300, 300, 300)  // 900
-                        )
-                );
+    void getOneRandomMenu_shouldReturnNull_whenEmpty() {
 
-        var result = menuService.getHealthyMenus();
+        Mockito.when(menuDao.getOneRandomMenu())
+                .thenReturn(Optional.empty());
+
+        var result = menuService.getOneRandomMenu();
+
+        assertNull(result);
+    }
+
+    @Test
+    void getMenusByRestaurant_shouldBuildMenusCorrectly() {
+
+        String cif = "A1";
+
+        Mockito.when(platoDao.getPlatosByRestaurant(cif))
+                .thenReturn(List.of(
+                        plato(5, 200, 1),
+                        plato(6, 300, 2),
+                        plato(7, 400, 3)
+                ));
+
+        var result = menuService.getMenusByRestaurant(cif);
 
         assertEquals(1, result.size());
-        assertEquals(300, result.get(0).getCaloriasTotales());
+        assertEquals(18.0, result.get(0).getPrecioTotal());
     }
 
     @Test
-    void getLowCostMenus_shouldReturnBelowAvereagePrice() {
+    void getLowCostFilter_shouldReturnBelowAverage() {
+
         String cif = "A1";
-        Mockito.when(menuDao.getMenusByRestaurant(cif))
-                .thenReturn(
-                        java.util.List.of(
-                                menuDAO(1, 1, 1, 100, 100, 100),
-                                menuDAO(10, 10, 10, 100, 100, 100)
-                        )
-                );
-        var result = menuService.getLowCostMenus(cif);
+
+        Mockito.when(platoDao.getPlatosByRestaurant(cif))
+                .thenReturn(List.of(
+                        plato(1, 100, 1),
+                        plato(1, 100, 2),
+                        plato(1, 100, 3),
+                        plato(10, 100, 1),
+                        plato(10, 100, 2),
+                        plato(10, 100, 3)
+                ));
+
+        var result = menuService.getMenusFilteredByRestaurant(cif, new LowCost());
 
         assertEquals(1, result.size());
         assertEquals(3.0, result.get(0).getPrecioTotal());
     }
 
     @Test
-    void getOneRandomMenu_shouldReturnNull_whenEmpty() {
-        Mockito.when(menuDao.getOneRandomMenu())
-                .thenReturn(Optional.empty());
+    void getHealthyFilter_shouldReturnBelowAverageCalories() {
 
-        var result = menuService.getOneRandomMenu();
+        String cif = "A1";
 
-        assertEquals(null, result);
-    }
+        Mockito.when(platoDao.getPlatosByRestaurant(cif))
+                .thenReturn(List.of(
+                        plato(5, 100, 1),
+                        plato(5, 100, 2),
+                        plato(5, 100, 3),
+                        plato(5, 500, 1),
+                        plato(5, 500, 2),
+                        plato(5, 500, 3)
+                ));
 
-    @Test
-    void getMenus_shouldReturnList() {
-        Mockito.when(menuDao.getMenus())
-                .thenReturn(
-                        java.util.List.of(
-                                menuDAO(1, 1, 1, 100, 100, 100)
-                        )
-                );
-
-        var result = menuService.getMenus();
+        var result = menuService.getMenusFilteredByRestaurant(cif, new Healthy());
 
         assertEquals(1, result.size());
+        assertEquals(300, result.get(0).getCaloriasTotales());
     }
-
 }

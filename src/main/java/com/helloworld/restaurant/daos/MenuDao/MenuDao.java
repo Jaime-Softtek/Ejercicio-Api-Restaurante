@@ -8,8 +8,5 @@ import java.util.Optional;
 
 public interface MenuDao {
     List<Menu> getMenus();
-
     Optional<Menu> getOneRandomMenu();
-    List<Menu> getLowCostMenus();
-    List<Menu> getMenusByRestaurant(String cif);
 }
