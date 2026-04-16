@@ -60,7 +60,7 @@ public class RestauranteControllerImpl implements RestauranteController{
                 .body("Restaurante creado exitosamente");
     }
 
-    @DeleteMapping("/restaurantes/{cif}")
+    @DeleteMapping("/eliminar/{cif}")
     public ResponseEntity<String> eliminarRestaurante(@PathVariable String cif) {
         boolean eliminado = restauranteService.deleteRestaurante(cif);
 
@@ -72,15 +72,13 @@ public class RestauranteControllerImpl implements RestauranteController{
         return ResponseEntity.ok("Restaurante eliminado correctamente");
     }
 
-    @PutMapping("/restaurantes/{cif}")
-    public ResponseEntity<String> editarRestaurante(
+    @PutMapping("/modificar/{cif}")
+    public ResponseEntity<Restaurante> editarRestaurante(
             @PathVariable String cif,
-            @RequestBody
-            com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+            @RequestBody com.helloworld.restaurant.daos.model.Restaurante restaurante) {
 
         return restauranteService.modifyRestaurante(cif, restaurante)
-                .map(r -> ResponseEntity.ok(r))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No existe un restaurante con cif: " + cif));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
