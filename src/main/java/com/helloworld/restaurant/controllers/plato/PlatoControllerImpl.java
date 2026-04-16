@@ -56,9 +56,9 @@ public class PlatoControllerImpl implements PlatoController {
 
     @Override
     @PutMapping("/actualizar")
-    public Optional<Plato> editPlato(int id, String nombre, double precio, Plato.Categoria categoria, int calorias) {
+    public Optional<Plato> editPlato(@RequestBody Plato plato) {
 
-        Optional<Plato> platoNuevo = platoService.editPlato(id, new Plato(id, nombre, precio, categoria, calorias));
+        Optional<Plato> platoNuevo = platoService.editPlato(plato.getId(), plato);
 
         if (platoNuevo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para actualizar no encontrado");
@@ -78,6 +78,17 @@ public class PlatoControllerImpl implements PlatoController {
             return platoBorrado;
         }
 
+    }
+
+    @Override
+    @PostMapping("")
+    public Optional<Plato> createPlato(@RequestBody Plato plato) {
+        Optional<Plato> platoCreado = platoService.createPlato(plato);
+        if (platoCreado.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para crear no encontrado");
+        } else {
+            return platoCreado;
+        }
     }
 
 }

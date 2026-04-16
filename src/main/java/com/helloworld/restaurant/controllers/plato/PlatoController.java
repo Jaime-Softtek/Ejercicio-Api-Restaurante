@@ -10,7 +10,8 @@ public interface PlatoController {
 	List<Plato> getPlatos();
 	Plato getPlatosById(String id);
 	List<Plato> getPlatosByCalorias(String calorias);
-	Optional<Plato> editPlato(int id, String nombre, double precio, Plato.Categoria categoria, int calorias);
+	Optional<Plato> editPlato(Plato plato);
 	Optional<Plato> deletePlato(int id);
+	Optional<Plato> createPlato(Plato plato);
 
 }

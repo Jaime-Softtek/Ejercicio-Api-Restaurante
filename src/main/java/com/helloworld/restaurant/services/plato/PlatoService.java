@@ -13,5 +13,6 @@ public interface PlatoService {
 	List<Plato> getPlatosByCategoria(int categoria);
 	Optional<Plato> editPlato(int id, Plato plato);
 	Optional<Plato> deletePlato(int id);
+	Optional<Plato> createPlato(Plato plato);
 
 }

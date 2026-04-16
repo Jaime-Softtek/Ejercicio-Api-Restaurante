@@ -52,5 +52,10 @@ public class PlatoServiceImpl implements PlatoService {
 		return platoDao.deletePlato(id).map(Plato::fromPlatoDAO);
 	}
 
+	@Override
+	public Optional<Plato> createPlato(Plato plato) {
+		return platoDao.cretePlato(plato.toPlatoDAO()).map(Plato::fromPlatoDAO);
+	}
+
 
 }

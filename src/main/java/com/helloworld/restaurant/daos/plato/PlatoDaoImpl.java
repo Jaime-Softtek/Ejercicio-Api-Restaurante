@@ -119,5 +119,26 @@ public class PlatoDaoImpl implements PlatoDao {
         }
     }
 
+	@Override
+	public Optional<Plato> cretePlato(Plato plato) {
+		Map<String, Object> params = new HashMap<>();
+
+
+		params.put("nombre", plato.nombre());
+		params.put("precio", plato.precio());
+		params.put("categoria", plato.categoria());
+		params.put("calorias", plato.calorias());
+
+		String query = "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES (:nombre, :precio, :categoria, :calorias)";
+
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+		}
+		catch(EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+
+	}
+
 
 }
