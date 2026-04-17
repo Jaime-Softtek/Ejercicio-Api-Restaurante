@@ -1,11 +1,8 @@
-package com.helloworld.restaurant;
+package com.helloworld.restaurant.controllers.menu;
 
-import com.helloworld.restaurant.controllers.menu.MenuControllerImpl;
 import com.helloworld.restaurant.model.Menu;
 import com.helloworld.restaurant.services.menu.MenuService;
 import com.helloworld.restaurant.daos.model.Plato;
-import com.helloworld.restaurant.services.menu.filter.Healthy;
-import com.helloworld.restaurant.services.menu.filter.LowCost;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
