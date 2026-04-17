@@ -1,12 +1,12 @@
-package com.helloworld.restaurant;
+package com.helloworld.restaurant.controllers.menu;
 
-import com.helloworld.restaurant.controllers.menu.MenuControllerImpl;
 import com.helloworld.restaurant.model.Menu;
 import com.helloworld.restaurant.services.menu.MenuService;
 import com.helloworld.restaurant.daos.model.Plato;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,7 +15,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest(MenuControllerImpl.class)
+@WebMvcTest(MenuControllerImpl.class)
 class MenuControllerImplTest {
 
     @Autowired
@@ -38,7 +38,9 @@ class MenuControllerImplTest {
 
     @Test
     void getMenus_shouldReturnList() throws Exception {
-        Mockito.when(menuService.getMenus()).thenReturn(List.of(menu(), menu()));
+
+        Mockito.when(menuService.getMenus())
+                .thenReturn(List.of(menu(), menu()));
 
         mockMvc.perform(get("/restaurante/menus"))
                 .andExpect(status().isOk())
@@ -47,7 +49,9 @@ class MenuControllerImplTest {
 
     @Test
     void getOneMenu_shouldReturnMenu() throws Exception {
-        Mockito.when(menuService.getOneRandomMenu()).thenReturn(menu());
+
+        Mockito.when(menuService.getOneRandomMenu())
+                .thenReturn(menu());
 
         mockMvc.perform(get("/restaurante/menus/one-menu"))
                 .andExpect(status().isOk())
@@ -55,25 +59,8 @@ class MenuControllerImplTest {
     }
 
     @Test
-    void getLowCostMenus_shouldReturnList() throws Exception {
-        Mockito.when(menuService.getLowCostMenus()).thenReturn(List.of(menu()));
-
-        mockMvc.perform(get("/restaurante/menus/low-cost"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
-    }
-
-    @Test
-    void getHealthyMenus_shouldReturnList() throws Exception {
-        Mockito.when(menuService.getHealthyMenus()).thenReturn(List.of(menu()));
-
-        mockMvc.perform(get("/restaurante/menus/healthy"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
-    }
-
-    @Test
     void getMenusByRestaurant_shouldReturnList() throws Exception {
+
         Mockito.when(menuService.getMenusByRestaurant("A1"))
                 .thenReturn(List.of(menu()));
 
@@ -82,9 +69,11 @@ class MenuControllerImplTest {
                 .andExpect(jsonPath("$.length()").value(1));
     }
 
+
     @Test
-    void getLowCostMenusByRestaurant_shouldReturnList() throws Exception {
-        Mockito.when(menuService.getLowCostMenus("A1"))
+    void getLowCostByRestaurant_shouldReturnList() throws Exception {
+
+        Mockito.when(menuService.getMenusFilteredByRestaurant(Mockito.eq("A1"), Mockito.any()))
                 .thenReturn(List.of(menu()));
 
         mockMvc.perform(get("/restaurante/menus/A1/low-cost"))
@@ -93,8 +82,9 @@ class MenuControllerImplTest {
     }
 
     @Test
-    void getHealthyMenusByRestaurant_shouldReturnList() throws Exception {
-        Mockito.when(menuService.getHealthyMenus("A1"))
+    void getHealthyByRestaurant_shouldReturnList() throws Exception {
+
+        Mockito.when(menuService.getMenusFilteredByRestaurant(Mockito.eq("A1"), Mockito.any()))
                 .thenReturn(List.of(menu()));
 
         mockMvc.perform(get("/restaurante/menus/A1/healthy"))

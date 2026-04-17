@@ -93,4 +93,44 @@ public class RestauranteControllerImpl implements RestauranteController{
                 .build();
     }
 
+    @PutMapping("/modificar/{cif}")
+    public ResponseEntity<Restaurante> editarRestaurante(
+            @PathVariable String cif,
+            @RequestBody com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+
+        return restauranteService.modifyRestaurante(cif, restaurante)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{cif}/platos/{idPlato}")
+    public ResponseEntity<String> addPlatoToRestaurante(
+            @PathVariable String cif,
+            @PathVariable Integer idPlato) {
+
+        boolean added = restauranteService.addPlatoToRestaurante(cif, idPlato);
+
+        if (!added) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo añadir el plato. Verifica que el plato no esté ya en la carta.");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Plato añadido correctamente");
+    }
+
+    @DeleteMapping("/{cif}/platos/{idPlato}")
+    public ResponseEntity<String> removePlatoFromRestaurante(
+            @PathVariable String cif,
+            @PathVariable Integer idPlato) {
+
+        boolean removed = restauranteService.removePlatoFromRestaurante(cif, idPlato);
+
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo eliminar. Verifica que el plato existe.");
+        }
+
+        return ResponseEntity.ok("Plato eliminado de la carta correctamente");
+    }
 }

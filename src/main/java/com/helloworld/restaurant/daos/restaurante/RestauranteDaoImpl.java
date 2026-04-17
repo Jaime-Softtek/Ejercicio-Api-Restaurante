@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 
 @Repository
 public class RestauranteDaoImpl implements RestauranteDao{
@@ -120,4 +121,35 @@ public class RestauranteDaoImpl implements RestauranteDao{
     }
 
     //editar carta restaurante
+    @Override
+    public boolean addPlatoToRestaurante(String cif, Integer idPlato) {
+        String query = "INSERT INTO restaurante_plato (id_plato, cif_restaurante) VALUES (:idPlato, :cif)";
+        
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("idPlato", idPlato)
+                .addValue("cif", cif);
+        
+        try {
+            int filas = jdbcTemplate.update(query, params);
+            return filas == 1;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removePlatoFromRestaurante(String cif, Integer idPlato) {
+        String query = "DELETE FROM restaurante_plato WHERE cif_restaurante=:cif AND id_plato=:idPlato";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("cif", cif)
+                .addValue("idPlato", idPlato);
+
+        try {
+            int filas = jdbcTemplate.update(query, params);
+            return filas == 1;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
 }
