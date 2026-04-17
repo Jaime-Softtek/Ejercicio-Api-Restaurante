@@ -6,19 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Sql("/schema.sql")
+@Transactional
 class RestauranteDaoImplTest {
 
-    @Autowired private RestauranteDao restauranteDao;
+    @Autowired
+    private RestauranteDao restauranteDao;
 
     @Test
     @Sql(statements = {"INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('A12345678', 'La Mar Salada', 'Calle Mayor, 1', '123456789');"})
-    void ShouldReturnAllRestaurantes() throws Exception {
+    void ShouldReturnAllRestaurantes(){
         var restaurante = restauranteDao.getRestaurantes();
 
         Assertions.assertEquals(1, restaurante.size());
@@ -26,6 +28,7 @@ class RestauranteDaoImplTest {
     }
 
     @Test
+    @Sql(statements = {"INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('A12345678', 'La Mar Salada', 'Calle Mayor, 1', '123456789');"})
     void ShouldReturnCifIfRestaurantExists() {
         var restaurante = restauranteDao.getRestauranteByCif("A12345678");
 
@@ -33,13 +36,15 @@ class RestauranteDaoImplTest {
     }
 
     @Test
-    void ShouldReturnEmptyObjectIfRestaurantDoesntExists(){
+    void ShouldReturnEmptyObjectIfRestaurantDoesntExists() {
         var restaurante = restauranteDao.getRestauranteByCif("A000000000");
 
         Assertions.assertEquals(Optional.empty(), restaurante);
     }
 
     @Test
+    @Sql(statements = {"INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('A12345678', 'La Mar Salada', 'Calle Mayor, 1', '123456789');INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Ensalada', 6.00, 1, 150);INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(1, 'A12345678');"
+    })
     void ShouldReturnACartaFromRestaurant() {
         var carta = restauranteDao.getRestauranteByCif("A12345678").get().carta();
 
