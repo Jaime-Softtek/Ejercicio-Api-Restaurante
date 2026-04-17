@@ -1,15 +1,21 @@
 package com.helloworld.restaurant.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class Restaurante {
+    @Schema(description = "Número de identificación fiscal")
     private String cif;
+    @Schema(description = "Nombre del local")
     private String nombre;
+    @Schema(description = "Dirección física del local")
     private String direccion;
+    @Schema(description = "Número de telefono del local")
     private int telefono;
+    @Schema(description = "Platos disponibles en el local")
     private List<Plato> carta;
 
     public Restaurante(String cif, String nombre, String direccion, int telefono, List<Plato> carta) {
