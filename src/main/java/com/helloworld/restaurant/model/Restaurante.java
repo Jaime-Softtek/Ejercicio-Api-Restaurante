@@ -1,15 +1,19 @@
 package com.helloworld.restaurant.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class Restaurante {
+
     @Schema(description = "Número de identificación fiscal")
+    @NotNull(message = "CIF del local es obligatorio")
     private String cif;
     @Schema(description = "Nombre del local")
+    @NotNull(message = "Nombre del establecimiento es obligatorio")
     private String nombre;
     @Schema(description = "Dirección física del local")
     private String direccion;
