@@ -3,6 +3,7 @@ package com.helloworld.restaurant.controllers.restaurante;
 import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.model.Restaurante;
 import com.helloworld.restaurant.services.restaurante.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,14 @@ public class RestauranteControllerImpl implements RestauranteController{
 
     @Override
     @GetMapping("")
+    @Operation(summary = "Listar todos los restaurantes de la cadena")
     public List<Restaurante> getRestaurantes() {
         return restauranteService.getAllRestaurantes();
     }
 
     @Override
     @GetMapping("/{cif}")
+    @Operation(summary = "Obtener un restaurante específico mediante su CIF")
     public Restaurante getRestauranteByCif(@PathVariable String cif) {
         var restaurante = restauranteService.getRestauranteByCif(cif);
         if (restaurante.isEmpty()) {
@@ -40,6 +43,7 @@ public class RestauranteControllerImpl implements RestauranteController{
 
     @Override
     @GetMapping("/{cif}/carta")
+    @Operation(summary = "Obtener la carta de un restaurante específico mediante su carta")
     public List<Plato> getCartaFromRestaurante(@PathVariable String cif) {
         var carta = restauranteService.getCartaFromRestaurante(cif);
         if (carta.isEmpty()){
