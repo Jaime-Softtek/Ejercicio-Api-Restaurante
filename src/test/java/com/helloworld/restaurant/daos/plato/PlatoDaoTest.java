@@ -1,18 +1,25 @@
 package com.helloworld.restaurant.daos.plato;
 
 import com.helloworld.restaurant.daos.model.Plato;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@JdbcTest(properties = "spring.sql.init.mode=never")
+@Import(PlatoDaoImpl.class)
 @Transactional
+@ActiveProfiles("test")
 public class PlatoDaoTest {
 
     @Autowired
@@ -21,7 +28,25 @@ public class PlatoDaoTest {
     @Autowired
     private PlatoDao platoDao;
 
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("""
+            CREATE TABLE plato (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nombre VARCHAR(255),
+                precio DOUBLE,
+                categoria INT,
+                calorias INT
+            )
+        """);
+    }
+
     @Test
+    @Sql(statements = {
+            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Ensalada', 5.99, 1, 150)",
+            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Gazpacho', 4.99, 1, 200)",
+            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Filete de ternera', 12.99, 2, 600)"
+    })
     void deberiaObtenerTodosLosPlatos(){
 
         List<Plato> platos = platoDao.getPlatos();
