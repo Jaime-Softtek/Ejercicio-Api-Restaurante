@@ -3,6 +3,7 @@ package com.helloworld.restaurant.controllers.restaurante;
 import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.model.Restaurante;
 import com.helloworld.restaurant.services.restaurante.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +83,7 @@ public class RestauranteControllerImpl implements RestauranteController{
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Agregar platos")
     @PostMapping("/{cif}/platos/{idPlato}")
     public ResponseEntity<String> addPlatoToRestaurante(
             @PathVariable String cif,
@@ -98,6 +100,7 @@ public class RestauranteControllerImpl implements RestauranteController{
                 .body("Plato añadido correctamente");
     }
 
+    @Operation(summary = "Eliminar platos")
     @DeleteMapping("/{cif}/platos/{idPlato}")
     public ResponseEntity<String> removePlatoFromRestaurante(
             @PathVariable String cif,
