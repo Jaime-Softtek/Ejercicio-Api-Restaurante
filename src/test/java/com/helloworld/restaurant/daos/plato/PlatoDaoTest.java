@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-@JdbcTest(properties = "spring.sql.init.mode=never")
+@JdbcTest
 @Import(PlatoDaoImpl.class)
 @Transactional
 @ActiveProfiles("test")
@@ -28,29 +28,12 @@ public class PlatoDaoTest {
     @Autowired
     private PlatoDao platoDao;
 
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute("""
-            CREATE TABLE plato (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nombre VARCHAR(255),
-                precio DOUBLE,
-                categoria INT,
-                calorias INT
-            )
-        """);
-    }
 
     @Test
-    @Sql(statements = {
-            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Ensalada', 5.99, 1, 150)",
-            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Gazpacho', 4.99, 1, 200)",
-            "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES ('Filete de ternera', 12.99, 2, 600)"
-    })
     void deberiaObtenerTodosLosPlatos(){
 
         List<Plato> platos = platoDao.getPlatos();
-        assert !platos.isEmpty();
+        assertFalse(platos.isEmpty());
         assertEquals("Ensalada", platos.get(0).nombre());
 
     }
@@ -63,6 +46,7 @@ public class PlatoDaoTest {
         assertEquals(platos.get(0).nombre(), plato.nombre());
 
     }
+
 
     @Test
     void deberiaObtenerPlatosDeUnaSolaCategoria(){
@@ -78,7 +62,7 @@ public class PlatoDaoTest {
     void deberiaObtenerPlatosConCaloriasInferioresA500(){
 
         List<Plato> platos = platoDao.getPlatosByCalorias(500);
-        assert platos.stream().allMatch(plato -> plato.calorias() < 500);
+        assertTrue( platos.stream().allMatch(plato -> plato.calorias() < 500));
 
     }
 
@@ -120,7 +104,7 @@ public class PlatoDaoTest {
         platoDao.cretePlato(plato);
 
         platoDao.deletePlato(plato.id());
-        assert platoDao.getPlatosById(plato.id()).isEmpty();
+        assertTrue(platoDao.getPlatosById(plato.id()).isEmpty());
 
     }
 
