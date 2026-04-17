@@ -43,15 +43,8 @@ public class RestauranteServiceImpl implements RestauranteService{
     }
 
     @Override
-    public boolean createRestaurante(Restaurante restaurante) {
-        if (restaurante == null) {
-            return false;
-        }
-        if (restauranteDao.getRestauranteByCif(restaurante.getCif()).isPresent()) {
-            return false;
-        }
-
-        return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante));
+    public Optional<Restaurante> createRestaurante(Restaurante restaurante) {
+        return restauranteDao.saveRestaurante(Restaurante.fromRestauranteModel(restaurante)).map(Restaurante::fromRestauranteDao);
     }
 
     @Override
@@ -62,9 +55,8 @@ public class RestauranteServiceImpl implements RestauranteService{
     }
 
     @Override
-    public Optional<Restaurante> modifyRestaurante(String cif,
-                                                   com.helloworld.restaurant.daos.model.Restaurante restaurante) {
-        return restauranteDao.editRestaurante(cif, restaurante)
+    public Optional<Restaurante> modifyRestaurante(String cif, Restaurante restaurante) {
+        return restauranteDao.editRestaurante(cif, Restaurante.fromRestauranteModel(restaurante))
                 .map(Restaurante::fromRestauranteDao);
     }
 

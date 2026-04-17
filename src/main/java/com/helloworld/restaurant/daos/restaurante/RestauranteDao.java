@@ -9,7 +9,7 @@ public interface RestauranteDao {
     List<Restaurante> getRestaurantes();
     Optional<Restaurante> getRestauranteByCif(String cif);
 
-    boolean saveRestaurante(Restaurante newRestaurante);
+    Optional<Restaurante> saveRestaurante(Restaurante newRestaurante);
     boolean eliminarRestaurante(String cif);
     Optional<Restaurante> editRestaurante(String cif, Restaurante restaurante);
     boolean addPlatoToRestaurante(String cif, Integer idPlato);

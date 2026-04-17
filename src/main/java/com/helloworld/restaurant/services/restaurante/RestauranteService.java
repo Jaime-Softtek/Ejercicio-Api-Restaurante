@@ -12,8 +12,9 @@ public interface RestauranteService {
     Optional<Restaurante> getRestauranteByCif(String cif);
     public List<Plato> getCartaFromRestaurante(String cif);
 
-    boolean createRestaurante(Restaurante restaurante);
+    Optional<Restaurante> createRestaurante(Restaurante restaurante);
     boolean deleteRestaurante(String cif);
+    Optional<Restaurante> modifyRestaurante(String cif, Restaurante restaurante);
     Optional<Restaurante> modifyRestaurante(String cif,
                                             com.helloworld.restaurant.daos.model.Restaurante restaurante);
     boolean addPlatoToRestaurante(String cif, Integer idPlato);
