@@ -93,16 +93,16 @@ public class PlatoControllerImpl implements PlatoController {
     public ResponseEntity<Plato> createPlato(@RequestBody Plato plato) {
         Optional<Plato> platoCreado = platoService.createPlato(plato);
 
-        Optional<Plato> platoExistente = platoService.getPlatos().stream().filter(p -> p.getNombre().equals(plato.getNombre())).findFirst();
+        Optional<Plato> platoCreadoCompleto = platoService.getPlatos().stream().filter(p -> p.getNombre().equals(plato.getNombre())).findFirst();
 
-        if (platoCreado.isEmpty() || platoExistente.isEmpty()) {
+        if (platoCreado.isEmpty() || platoCreadoCompleto.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plato para crear no encontrado");
         } else {
 
-            URI location = URI.create("restaurante/platos/"+ platoExistente.get().getId());
+            URI location = URI.create("restaurante/platos/"+ platoCreadoCompleto.get().getId());
             return ResponseEntity
                     .created(location)
-                    .body(platoExistente.get());
+                    .body(platoCreadoCompleto.get());
 
         }
     }
