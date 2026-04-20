@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("restaurante/locales")
@@ -47,29 +49,48 @@ public class RestauranteControllerImpl implements RestauranteController{
         }
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<String> crearRestaurante(@RequestBody Restaurante restaurante) {
-        boolean creado = restauranteService.createRestaurante(restaurante);
+    //devolver en cabecera direccion de restaurante creado (/crear/idNewRestaurante)
+    @PutMapping("/{cif}")
+    public ResponseEntity<Restaurante> crearOEditarRestaurante( @PathVariable String cif, @RequestBody Restaurante restaurante) {
+        if (restauranteService.getRestauranteByCif(cif).isEmpty()) {
+            Optional<Restaurante> creado = restauranteService.createRestaurante(restaurante);
+            if (creado.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
 
-        if (!creado) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Restaurante ya existe o datos inválidos");
+            URI location = URI.create("restaurante/locales/" + creado.get().getCif());
+
+            return ResponseEntity
+                    .created(location)
+                    .body(creado.get());
+        } else {
+            Optional<Restaurante> modificado = restauranteService.modifyRestaurante(cif, restaurante);
+
+            if (modificado.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            URI location = URI.create("restaurante/locales/" + modificado.get().getCif());
+
+            return ResponseEntity
+                    .ok()               // 200 OK
+                    .location(location) // header Location opcional en updates
+                    .body(modificado.get());
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Restaurante creado exitosamente");
     }
 
-    @DeleteMapping("/eliminar/{cif}")
-    public ResponseEntity<String> eliminarRestaurante(@PathVariable String cif) {
+
+    @DeleteMapping("/{cif}")
+    public ResponseEntity<Restaurante> eliminarRestaurante(@PathVariable String cif) {
         boolean eliminado = restauranteService.deleteRestaurante(cif);
 
         if (!eliminado) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No existe un restaurante con cif: " + cif);
+            return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok("Restaurante eliminado correctamente");
+        URI location = URI.create("/restaurante");
+        return ResponseEntity.noContent()
+                .location(location)
+                .build();
     }
 
     @PutMapping("/modificar/{cif}")
@@ -80,5 +101,36 @@ public class RestauranteControllerImpl implements RestauranteController{
         return restauranteService.modifyRestaurante(cif, restaurante)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{cif}/platos/{idPlato}")
+    public ResponseEntity<String> addPlatoToRestaurante(
+            @PathVariable String cif,
+            @PathVariable Integer idPlato) {
+
+        boolean added = restauranteService.addPlatoToRestaurante(cif, idPlato);
+
+        if (!added) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo añadir el plato. Verifica que el plato no esté ya en la carta.");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Plato añadido correctamente");
+    }
+
+    @DeleteMapping("/{cif}/platos/{idPlato}")
+    public ResponseEntity<String> removePlatoFromRestaurante(
+            @PathVariable String cif,
+            @PathVariable Integer idPlato) {
+
+        boolean removed = restauranteService.removePlatoFromRestaurante(cif, idPlato);
+
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo eliminar. Verifica que el plato existe.");
+        }
+
+        return ResponseEntity.ok("Plato eliminado de la carta correctamente");
     }
 }

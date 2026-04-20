@@ -1,0 +1,36 @@
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Ensalada', 6.00, 1, 150);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Gazpacho', 7.00, 1, 110);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Fabada', 9.00, 1, 470);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Hamburguesa', 15.00, 2, 650);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Solomillo', 28.00, 2, 360);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Entrecot', 23.00, 2, 510);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Merluza a la plancha', 21.00, 2, 180);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Fruta', 6.00, 3, 80);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Flan', 8.00, 3, 190);
+INSERT INTO plato(nombre, precio, categoria, calorias) VALUES('Arroz con leche', 8.00, 3, 240);
+
+INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('A12345678', 'La Mar Salada', 'Calle Mayor, 1', '123456789');
+INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('B12345678', 'El Asador', 'Calle Bailen, 2', '123456780');
+INSERT INTO restaurante(cif, nombre, direccion, telefono) VALUES('C12345678', 'La Fruteria', 'Calle Alcala, 3', '123456781');
+
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(1, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(2, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(1, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(3, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(2, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(3, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(4, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(5, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(4, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(6, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(5, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(6, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(8, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(9, 'A12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(8, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(10, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(9, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(10, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(7, 'C12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(7, 'B12345678');
+INSERT INTO restaurante_plato(id_plato, cif_restaurante) VALUES(7, 'A12345678');

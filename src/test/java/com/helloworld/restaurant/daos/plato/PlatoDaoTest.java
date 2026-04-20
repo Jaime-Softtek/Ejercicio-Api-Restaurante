@@ -1,18 +1,25 @@
 package com.helloworld.restaurant.daos.plato;
 
 import com.helloworld.restaurant.daos.model.Plato;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@JdbcTest
+@Import(PlatoDaoImpl.class)
 @Transactional
+@ActiveProfiles("test")
 public class PlatoDaoTest {
 
     @Autowired
@@ -21,11 +28,12 @@ public class PlatoDaoTest {
     @Autowired
     private PlatoDao platoDao;
 
+
     @Test
     void deberiaObtenerTodosLosPlatos(){
 
         List<Plato> platos = platoDao.getPlatos();
-        assert !platos.isEmpty();
+        assertFalse(platos.isEmpty());
         assertEquals("Ensalada", platos.get(0).nombre());
 
     }
@@ -38,6 +46,7 @@ public class PlatoDaoTest {
         assertEquals(platos.get(0).nombre(), plato.nombre());
 
     }
+
 
     @Test
     void deberiaObtenerPlatosDeUnaSolaCategoria(){
@@ -53,7 +62,7 @@ public class PlatoDaoTest {
     void deberiaObtenerPlatosConCaloriasInferioresA500(){
 
         List<Plato> platos = platoDao.getPlatosByCalorias(500);
-        assert platos.stream().allMatch(plato -> plato.calorias() < 500);
+        assertTrue( platos.stream().allMatch(plato -> plato.calorias() < 500));
 
     }
 
@@ -95,7 +104,7 @@ public class PlatoDaoTest {
         platoDao.cretePlato(plato);
 
         platoDao.deletePlato(plato.id());
-        assert platoDao.getPlatosById(plato.id()).isEmpty();
+        assertTrue(platoDao.getPlatosById(plato.id()).isEmpty());
 
     }
 
