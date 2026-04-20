@@ -14,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("restaurante/locales")
-public class RestauranteControllerImpl implements RestauranteController {
+public class RestauranteControllerImpl implements RestauranteController{
     private final RestauranteService restauranteService;
 
     public RestauranteControllerImpl(RestauranteService restauranteService) {
@@ -72,42 +73,61 @@ public class RestauranteControllerImpl implements RestauranteController {
     )
     public List<Plato> getCartaFromRestaurante(@Parameter(description = "CIF del restaurante cuya carta mostrar", required = true) @PathVariable String cif) {
         var carta = restauranteService.getCartaFromRestaurante(cif);
-        if (carta.isEmpty()) {
+        if (carta.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurante no encontrado");
         } else {
             return carta;
         }
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<String> crearRestaurante(@RequestBody Restaurante restaurante) {
-        boolean creado = restauranteService.createRestaurante(restaurante);
+    //devolver en cabecera direccion de restaurante creado (/crear/idNewRestaurante)
+    @PutMapping("/{cif}")
+    public ResponseEntity<Restaurante> crearOEditarRestaurante( @PathVariable String cif, @RequestBody Restaurante restaurante) {
+        if (restauranteService.getRestauranteByCif(cif).isEmpty()) {
+            Optional<Restaurante> creado = restauranteService.createRestaurante(restaurante);
+            if (creado.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
 
-        if (!creado) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Restaurante ya existe o datos inválidos");
+            URI location = URI.create("restaurante/locales/" + creado.get().getCif());
+
+            return ResponseEntity
+                    .created(location)
+                    .body(creado.get());
+        } else {
+            Optional<Restaurante> modificado = restauranteService.modifyRestaurante(cif, restaurante);
+
+            if (modificado.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            URI location = URI.create("restaurante/locales/" + modificado.get().getCif());
+
+            return ResponseEntity
+                    .ok()               // 200 OK
+                    .location(location) // header Location opcional en updates
+                    .body(modificado.get());
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Restaurante creado exitosamente");
     }
 
-    @DeleteMapping("/eliminar/{cif}")
-    public ResponseEntity<String> eliminarRestaurante(@PathVariable String cif) {
+
+    @DeleteMapping("/{cif}")
+    public ResponseEntity<Restaurante> eliminarRestaurante(@PathVariable String cif) {
         boolean eliminado = restauranteService.deleteRestaurante(cif);
 
         if (!eliminado) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No existe un restaurante con cif: " + cif);
+            return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok("Restaurante eliminado correctamente");
+        URI location = URI.create("/restaurante");
+        return ResponseEntity.noContent()
+                .location(location)
+                .build();
     }
 
     @PutMapping("/modificar/{cif}")
     public ResponseEntity<Restaurante> editarRestaurante(
             @PathVariable String cif,
-            @RequestBody com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+            @RequestBody Restaurante restaurante) {
 
         return restauranteService.modifyRestaurante(cif, restaurante)
                 .map(ResponseEntity::ok)
