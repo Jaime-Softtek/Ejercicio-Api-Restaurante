@@ -96,7 +96,7 @@ public class RestauranteControllerImpl implements RestauranteController{
     @PutMapping("/modificar/{cif}")
     public ResponseEntity<Restaurante> editarRestaurante(
             @PathVariable String cif,
-            @RequestBody com.helloworld.restaurant.daos.model.Restaurante restaurante) {
+            @RequestBody Restaurante restaurante) {
 
         return restauranteService.modifyRestaurante(cif, restaurante)
                 .map(ResponseEntity::ok)
