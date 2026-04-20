@@ -4,18 +4,22 @@ import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.model.Restaurante;
 import com.helloworld.restaurant.services.restaurante.RestauranteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("restaurante/locales")
-public class RestauranteControllerImpl implements RestauranteController{
+public class RestauranteControllerImpl implements RestauranteController {
     private final RestauranteService restauranteService;
 
     public RestauranteControllerImpl(RestauranteService restauranteService) {
@@ -24,15 +28,26 @@ public class RestauranteControllerImpl implements RestauranteController{
 
     @Override
     @GetMapping("")
-    @Operation(summary = "Listar todos los restaurantes de la cadena")
+    @Operation(
+            summary = "Get Restaurants",
+            description = "Listar todos los restaurantes de la cadena")
     public List<Restaurante> getRestaurantes() {
         return restauranteService.getAllRestaurantes();
     }
 
     @Override
     @GetMapping("/{cif}")
-    @Operation(summary = "Obtener un restaurante específico mediante su CIF")
-    public Restaurante getRestauranteByCif(@PathVariable String cif) {
+    @Operation(summary = "Get Restaurant by CIF",
+            description = "Obtener un restaurante específico mediante su CIF",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Restaurant",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Restaurante.class))),
+                    @ApiResponse(responseCode = "400", description = "No se encuentra el Restaurante")
+            }
+    )
+    public Restaurante getRestauranteByCif(@Parameter(description = "CIF del restaurante a buscar", required = true) @PathVariable String cif) {
         var restaurante = restauranteService.getRestauranteByCif(cif);
         if (restaurante.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurante no encontrado");
@@ -43,64 +58,56 @@ public class RestauranteControllerImpl implements RestauranteController{
 
     @Override
     @GetMapping("/{cif}/carta")
-    @Operation(summary = "Obtener la carta de un restaurante específico mediante su carta")
-    public List<Plato> getCartaFromRestaurante(@PathVariable String cif) {
+    @Operation(summary = "Get Carta By Restaurant",
+            description = "Obtener la carta de un restaurante específico mediante su carta",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Restaurant",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = Plato.class))
+                            )),
+                    @ApiResponse(responseCode = "400", description = "No se encuentra el Restaurante")
+            }
+    )
+    public List<Plato> getCartaFromRestaurante(@Parameter(description = "CIF del restaurante cuya carta mostrar", required = true) @PathVariable String cif) {
         var carta = restauranteService.getCartaFromRestaurante(cif);
-        if (carta.isEmpty()){
+        if (carta.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurante no encontrado");
         } else {
             return carta;
         }
     }
 
-    //devolver en cabecera direccion de restaurante creado (/crear/idNewRestaurante)
-    @PutMapping("/{cif}")
-    public ResponseEntity<Restaurante> crearOEditarRestaurante( @PathVariable String cif, @RequestBody Restaurante restaurante) {
-        if (restauranteService.getRestauranteByCif(cif).isEmpty()) {
-            Optional<Restaurante> creado = restauranteService.createRestaurante(restaurante);
-            if (creado.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            }
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearRestaurante(@RequestBody Restaurante restaurante) {
+        boolean creado = restauranteService.createRestaurante(restaurante);
 
-            URI location = URI.create("restaurante/locales/" + creado.get().getCif());
-
-            return ResponseEntity
-                    .created(location)
-                    .body(creado.get());
-        } else {
-            Optional<Restaurante> modificado = restauranteService.modifyRestaurante(cif, restaurante);
-
-            if (modificado.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            URI location = URI.create("restaurante/locales/" + modificado.get().getCif());
-
-            return ResponseEntity
-                    .ok()               // 200 OK
-                    .location(location) // header Location opcional en updates
-                    .body(modificado.get());
+        if (!creado) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Restaurante ya existe o datos inválidos");
         }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Restaurante creado exitosamente");
     }
 
-
-    @DeleteMapping("/{cif}")
-    public ResponseEntity<Restaurante> eliminarRestaurante(@PathVariable String cif) {
+    @DeleteMapping("/eliminar/{cif}")
+    public ResponseEntity<String> eliminarRestaurante(@PathVariable String cif) {
         boolean eliminado = restauranteService.deleteRestaurante(cif);
 
         if (!eliminado) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe un restaurante con cif: " + cif);
         }
-        URI location = URI.create("/restaurante");
-        return ResponseEntity.noContent()
-                .location(location)
-                .build();
+
+        return ResponseEntity.ok("Restaurante eliminado correctamente");
     }
 
     @PutMapping("/modificar/{cif}")
     public ResponseEntity<Restaurante> editarRestaurante(
             @PathVariable String cif,
-            @RequestBody Restaurante restaurante) {
+            @RequestBody com.helloworld.restaurant.daos.model.Restaurante restaurante) {
 
         return restauranteService.modifyRestaurante(cif, restaurante)
                 .map(ResponseEntity::ok)
