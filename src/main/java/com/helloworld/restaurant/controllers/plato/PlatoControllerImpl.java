@@ -4,12 +4,21 @@ import com.helloworld.restaurant.model.Menu;
 import com.helloworld.restaurant.model.Plato;
 import com.helloworld.restaurant.services.menu.MenuService;
 import com.helloworld.restaurant.services.plato.PlatoService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.WebUtils;
 
+import java.net.HttpCookie;
 import java.net.URI;
+import java.net.http.HttpRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +37,30 @@ public class PlatoControllerImpl implements PlatoController {
 
     @Override
     @GetMapping("")
-    public List<Plato> getPlatos() {
-        List<Plato> platos = platoService.getPlatos();
-        return platos;
+    public ResponseEntity<List<Plato>> getPlatos(@RequestParam(required = false) String calorias, HttpServletRequest request) {
+
+        if (calorias == null) {
+            var cookieCalorias = WebUtils.getCookie(request, "calorias");
+            var platos = (cookieCalorias == null) ?
+                    platoService.getPlatos() :
+                    platoService.getPlatosByCalorias(Integer.parseInt(cookieCalorias.getValue()));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(platos);
+        } else {
+            var platos = platoService.getPlatosByCalorias(Integer.parseInt(calorias));
+
+            var cookie = ResponseCookie
+                    .from("calorias", calorias)
+                    .path("/")
+                    .maxAge(60 * 60)
+                    .httpOnly(true)
+                    .sameSite("Lax")
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(platos);
+        }
     }
 
     @Override
@@ -46,13 +76,21 @@ public class PlatoControllerImpl implements PlatoController {
 
     @Override
     @GetMapping("/calorias")
-    public List<Plato> getPlatosByCalorias(@RequestParam String calorias) {
+    public ResponseEntity<List<Plato>> getPlatosByCalorias(@RequestParam String calorias) {
 
         List<Plato> platos = platoService.getPlatosByCalorias(Integer.parseInt(calorias));
         if (platos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Platos no encontrados");
         } else {
-            return platos;
+            var cookie = ResponseCookie
+                    .from("calorias", calorias)
+                    .path("/")
+                    .maxAge(60 * 60)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(platos);
         }
     }
 

@@ -4,7 +4,11 @@ import com.helloworld.restaurant.daos.model.Plato;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -125,25 +129,51 @@ public class PlatoDaoImpl implements PlatoDao {
 
 	@Override
 	public Optional<Plato> cretePlato(Plato plato) {
-		Map<String, Object> params = new HashMap<>();
-
-
-		params.put("nombre", plato.nombre());
-		params.put("precio", plato.precio());
-		params.put("categoria", plato.categoria());
-		params.put("calorias", plato.calorias());
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("nombre", plato.nombre());
+        params.addValue("precio", plato.precio());
+        params.addValue("categoria", plato.categoria());
+        params.addValue("calorias", plato.calorias());
 
 		String query = "INSERT INTO plato (nombre, precio, categoria, calorias) VALUES (:nombre, :precio, :categoria, :calorias)";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+
 		try {
-			jdbcTemplate.update(query, params);
-			return Optional.of(plato);
+            jdbcTemplate.update(query, params, keyHolder);
+
+            return Optional.of(new Plato(
+                    keyHolder.getKeyAs(Integer.class),
+                    plato.nombre(),
+                    plato.precio(),
+                    plato.categoria(),
+                    plato.calorias()
+            ));
 		}
 		catch(EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 
 	}
+
+    @Override
+    public Optional<Plato> findPlatoByParameters(Plato plato){
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("nombre", plato.nombre());
+        params.put("precio", plato.precio());
+        params.put("categoria", plato.categoria());
+        params.put("calorias", plato.calorias());
+
+        String query = "SELECT plato.id, plato.nombre, plato.precio, plato.categoria, plato.calorias FROM plato WHERE plato.nombre = :nombre AND plato.precio = :precio AND plato.categoria = :categoria AND plato.calorias = :calorias";
+
+        try{
+            return Optional.of(jdbcTemplate.queryForObject(query, params, platoRowMapper));
+        } catch (EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
+    }
 
 
 }

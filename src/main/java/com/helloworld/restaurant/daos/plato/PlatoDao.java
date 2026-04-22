@@ -15,5 +15,5 @@ public interface PlatoDao {
 	Optional<Plato> deletePlato(int id);
     List<Plato> getPlatosByRestaurant(String cif);
     Optional<Plato> cretePlato(Plato plato);
-
+    Optional<Plato> findPlatoByParameters(Plato plato);
 }
